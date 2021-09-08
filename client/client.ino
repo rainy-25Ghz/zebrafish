@@ -1,5 +1,9 @@
-int RelayPin = 8; //定义数字接口8 连接三极管基极
+int RelayPin = 13; //定义数字接口8 连接三极管基极
 int x;
+enum State{
+  OPEN,CLOSE
+} ;
+State state=CLOSE;
 void setup()
 {
   pinMode(RelayPin, OUTPUT); //定义RelayPin 接口为输出接口
@@ -8,24 +12,32 @@ void setup()
 }
 void loop()
 {
-  while (!Serial.available())
-    ;
+  while (!Serial.available());
+
   x = Serial.read();
   switch (x)
   {
-  case 'a':
-  {
-    Serial.print("a received");
-    digitalWrite(RelayPin, HIGH); //驱动继电器闭合导通
-    delay(5000);                  //延时1 秒钟
-    break;
+    case 'a':
+    {
+      Serial.print("a received");
+      state=OPEN;
+      break;
+    }
+    case 'b':
+    {
+      Serial.print("b received");
+      state=CLOSE;
+      break;
+    }
   }
-  case 'b':
-  {
-    Serial.print("b received");
-    digitalWrite(RelayPin, LOW); //驱动继电器断开
-    delay(5000);                 //延时1 秒钟
-    break;
-  }
+  switch (state){
+    case CLOSE:{
+      digitalWrite(RelayPin, LOW); //驱动继电器断开
+      break;
+    }
+    case OPEN:{
+      digitalWrite(RelayPin, HIGH);
+      break;
+    }
   }
 }
